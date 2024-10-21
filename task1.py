@@ -47,6 +47,9 @@ def a_star(grid, start, goal, heuristic_func):
 
     while open_list:
         current = heapq.heappop(open_list)[1]
+        if current in visited:
+            cycles_detected = True
+            continue
 
         # If goal is reached, reconstruct the path
         if current == goal:
@@ -65,10 +68,6 @@ def a_star(grid, start, goal, heuristic_func):
         for neighbor in neighbors:
             if 0 <= neighbor[0] < rows and 0 <= neighbor[1] < cols and grid[neighbor[0]][neighbor[1]] != 0:
                 tentative_g_score = g_score[current] + grid[neighbor[0]][neighbor[1]]
-
-                if neighbor in visited:
-                    cycles_detected = True
-                    continue
 
                 if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
                     came_from[neighbor] = current

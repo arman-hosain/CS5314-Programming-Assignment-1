@@ -55,7 +55,7 @@ def a_star(grid, start, goal, heuristic_func):
                 path.append(current)
                 current = came_from[current]
             path.append(start)
-            return path[::-1], g_score[goal], nodes_expanded, cycles_detected
+            return path[::-1], g_score[goal], nodes_expanded, "YES" if cycles_detected else "NO"
 
         visited.add(current)
         nodes_expanded += 1
@@ -76,7 +76,7 @@ def a_star(grid, start, goal, heuristic_func):
                     f_score[neighbor] = tentative_g_score + heuristic_func(neighbor, goal)
                     heapq.heappush(open_list, (f_score[neighbor], neighbor))
 
-    return None, None, nodes_expanded, cycles_detected  # No path found
+    return None, None, nodes_expanded, "YES" if cycles_detected else "NO"  # No path found
 
 
 # Main function

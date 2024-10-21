@@ -51,7 +51,7 @@ def return_path(current_node):
     return path[::-1]  # Return reversed path
 
 
-def a_star_with_cycle_detection(grid, start, goal, heuristic_func):
+def a_star_with_cycle_detection(grid, start, goal, heuristic_func, allow_diagonal=False):
     """
     Implements A* algorithm with cycle detection.
     :param grid: 2D grid containing values from 0 to 5
@@ -83,16 +83,25 @@ def a_star_with_cycle_detection(grid, start, goal, heuristic_func):
             path = return_path(current_node)
             return path, g_score[goal], nodes_expanded, "YES" if cycles_detected else "NO"
 
-        # Check if we revisited a node (cycle detection)
-        if current_position in visited:
-            cycles_detected = True
-            continue
 
         # Mark the node as visited
         visited.add(current_position)
         nodes_expanded += 1
 
         # Get neighbors (up, down, left, right)
+
+        # Determine neighbors based on whether diagonal movement is allowed
+        if allow_diagonal:
+            # Include diagonal neighbors
+            neighbors_pos = [(0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]
+            neighbors = [(current_position[0] + dx, current_position[1] + dy)
+                         for dx, dy in neighbors_pos]
+        else:
+            # Only horizontal and vertical neighbors
+            neighbors_pos = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+            neighbors = [(current_position[0] + dx, current_position[1] + dy)
+                         for dx, dy in neighbors_pos]
+
         neighbors = [(current_position[0] + dx, current_position[1] + dy)
                      for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]]
 
@@ -101,6 +110,11 @@ def a_star_with_cycle_detection(grid, start, goal, heuristic_func):
             if (0 <= neighbor[0] < len(grid)) and (0 <= neighbor[1] < len(grid[0])):
                 # Skip if it's an obstacle
                 if grid[neighbor[0]][neighbor[1]] == 0:
+                    continue
+
+                # Check if we revisited a node (cycle detection)
+                if neighbor in visited:
+                    cycles_detected = True
                     continue
 
                 tentative_g_score = g_score[current_position] + grid[neighbor[0]][neighbor[1]]

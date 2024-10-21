@@ -3,11 +3,25 @@ import heapq
 
 # Function to read the grid from a file
 def read_grid(file_path):
-    grid = []
     with open(file_path, 'r') as f:
-        for line in f:
-            grid.append([int(x) for x in line.split()])
-    return grid
+        # Split the text into lines
+        lines = f.read().strip().splitlines()
+        grid = []
+        start = None
+        goal = None
+
+        for line in lines:
+            if line.startswith("Start:"):
+                start = tuple(map(int, line.split("Start:")[1].strip()[1:-1].split(',')))
+            elif line.startswith("Goal:"):
+                goal = tuple(map(int, line.split("Goal:")[1].strip()[1:-1].split(',')))
+            else:
+                # Add the grid row to the grid list
+                grid.append([int(x) for x in line.split()])
+
+        grid = [row for row in grid if row]
+
+        return grid, start, goal
 
 
 # Heuristic functions
@@ -76,10 +90,8 @@ if __name__ == "__main__":
     input_file = sys.argv[1]
     heuristic_name = sys.argv[2]
 
-    grid = read_grid(input_file)
-    start = (0, 0)
-    # goal = (len(grid) - 1, len(grid[0]) - 1)
-    goal = (4,4)
+    grid, start, goal = read_grid(input_file)
+
     if heuristic_name == "manhattan":
         heuristic = manhattan_heuristic
     elif heuristic_name == "euclidean":
